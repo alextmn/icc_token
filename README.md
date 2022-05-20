@@ -49,14 +49,10 @@ last will be the one used when running the example.
 npm run build:program-rust
 ```
 
-```bash
-npm run build:program-c
-```
-
 ### Deploy the on-chain program
 
 ```bash
-solana program deploy dist/program/helloworld.so
+solana program deploy dist/program/icc-token.so
 ```
 
 ### Run the JavaScript client

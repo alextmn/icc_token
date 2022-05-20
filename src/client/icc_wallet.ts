@@ -48,13 +48,13 @@ const PROGRAM_PATH = path.resolve(__dirname, '../../dist/program');
  *   - `npm run build:program-c`
  *   - `npm run build:program-rust`
  */
-const PROGRAM_SO_PATH = path.join(PROGRAM_PATH, 'helloworld.so');
+const PROGRAM_SO_PATH = path.join(PROGRAM_PATH, 'icc_token.so');
 
 /**
  * Path to the keypair of the deployed program.
- * This file is created when running `solana program deploy dist/program/helloworld.so`
+ * This file is created when running `solana program deploy dist/program/icc-token.so`
  */
-const PROGRAM_KEYPAIR_PATH = path.join(PROGRAM_PATH, 'helloworld-keypair.json');
+const PROGRAM_KEYPAIR_PATH = path.join(PROGRAM_PATH, 'icc_token-keypair.json');
 
 /**
  * The state of an account managed by the ICC token program
@@ -141,7 +141,7 @@ export async function checkProgram(): Promise<void> {
   } catch (err) {
     const errMsg = (err as Error).message;
     throw new Error(
-      `Failed to read program keypair at '${PROGRAM_KEYPAIR_PATH}' due to error: ${errMsg}. Program may need to be deployed with \`solana program deploy dist/program/helloworld.so\``,
+      `Failed to read program keypair at '${PROGRAM_KEYPAIR_PATH}' due to error: ${errMsg}. Program may need to be deployed with \`solana program deploy dist/program/icc-token.so\``,
     );
   }
 
@@ -150,7 +150,7 @@ export async function checkProgram(): Promise<void> {
   if (programInfo === null) {
     if (fs.existsSync(PROGRAM_SO_PATH)) {
       throw new Error(
-        'Program needs to be deployed with `solana program deploy dist/program/helloworld.so`',
+        'Program needs to be deployed with `solana program deploy dist/program/icc-token.so`',
       );
     } else {
       throw new Error('Program needs to be built and deployed');
@@ -174,7 +174,7 @@ export async function checkProgram(): Promise<void> {
     console.log(
       'Creating account',
       greetedPubkey.toBase58(),
-      'to say hello to',
+      'to transfer ICC token',
     );
     const lamports = await connection.getMinimumBalanceForRentExemption(
       GREETING_SIZE,

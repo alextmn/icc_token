@@ -2138,7 +2138,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "solana-bpf-helloworld"
+name = "solana-bpf-icc-token"
 version = "0.0.1"
 dependencies = [
  "borsh",
