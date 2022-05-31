@@ -23,7 +23,9 @@
   "dependencies": {
     "@solana/web3.js": "^1.33.0",
     "borsh": "^0.7.0",
+    "dilithium-sign": "^1.0.1",
     "mz": "^2.7.0",
+    "sha256": "^0.2.0",
     "yaml": "^2.0.0"
   },
   "devDependencies": {
