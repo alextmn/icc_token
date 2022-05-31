@@ -25,9 +25,11 @@
     "@solana/web3.js": "^1.33.0",
     "axios": "^0.27.2",
     "borsh": "^0.7.0",
+    "dilithium-sign": "^1.0.1",
     "mz": "^2.7.0",
     "node-fetch": "^2.6.7",
     "typed-rest-client": "^1.8.9",
+    "sha256": "^0.2.0",
     "yaml": "^2.0.0"
   },
   "devDependencies": {
