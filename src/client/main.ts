@@ -9,7 +9,6 @@ import {
   makeICCTransfer,
   reportTransfers,
 } from './icc_wallet';
-const { getKernel } = require('dilithium-sign');
 const sha256  = require('sha256');
 
 function toHexString(byteArray : any) {
@@ -36,15 +35,6 @@ async function main() {
   const rHash = sha256(recvKeypair.pk);
   console.log("Reciver hash:" + rHash.toString('base64'));
 
-  let sign = Dilithium2.sign(rHash, recvKeypair.sk);
-  //let icc_payload = [...sign, ...recvKeypair.pk, ...rHash]
-  // sender, reciver, signature, validator
-  // 1. reciver->sender: hash of pk
-  // 2. sender -> sign tx: hash of pk, sol tx
-  // 3. sender -> ICC validator: pk, hash of send pk, ICC sign (saving pk, sign)
-  // 4. sender -> SOL: submit tx
-  // sender sign, validator signature, sender pk, recv public key
-  let icc_payload = [...rHash, ...rHash, ...rHash, ...rHash]
   console.log("ICC tx payload length:" + icc_payload.length);
 
   console.log("Let's ICC token transfer to a Solana account...");
@@ -58,9 +48,18 @@ async function main() {
   // Check if the program has been deployed
   await checkProgram();
 
-  // make Transfer
   
-  await makeICCTransfer(icc_payload);
+  //let icc_payload = [...sign, ...recvKeypair.pk, ...rHash]
+  // sender, reciver, signature, validator
+  // 1. reciver->sender: hash of pk
+  // 2. sender -> sign tx: hash of pk, sol tx
+  // 3. sender -> ICC validator: pk, hash of send pk, ICC sign (saving pk, sign)
+  // 4. sender -> SOL: submit tx
+  // sender sign, validator signature, sender pk, recv public key
+  let icc_payload = [...rHash, ...rHash, ...rHash, ...rHash]
+  
+  // make Transfer
+    await makeICCTransfer(icc_payload);
 
   // Find out how many times we have done all the token transfers
   await reportTransfers();
