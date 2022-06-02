@@ -4,16 +4,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import * as rm from 'typed-rest-client/RestClient';
-const { getKernel } = require('dilithium-sign');
 
-const baseUrl = 'http://DESKTOP-PS9V8BE:8080';
+const baseUrl = 'http://127.0.0.1:8080';
 const restc: rm.RestClient = new rm.RestClient('rest-samples', 
                                              baseUrl);
 interface HttpBinData {
     code: string;
 }                                             
 interface HttpSignData {
-    pub_key: string;
+    pk_hash: string;
     from_account: string,
     to_account: string,
     signature: string,
@@ -23,7 +22,7 @@ interface HttpKeyGenData {
 }
 
 interface HttpKeyGenResponse {
-    pk: string;
+    pk_hash: string;
     sk: string;
 }
 
@@ -32,35 +31,45 @@ interface HttpKeySign {
     message: string;
 }
 
-                                 
-async function icc_validator_test() {
-    console.log("icc test");
-    // const Dilithium2 = await getKernel('dilithium2_n3_v1');
-
-    // console.log("Generating Sender ICC keys");
-    // const recvKeypair = Dilithium2.genkey();
-    // const sign = Buffer.from(Dilithium2.sign("", recvKeypair.sk)).toString('base64');
-    // const pk = Buffer.from(recvKeypair.pk).toString('base64');
-
-    
-    
+export async function iccKeyPair() :Promise<[string,string]> {
     const keyGen: HttpKeyGenData = { key_gen:"true" }
     const keyGenRes: rm.IRestResponse<HttpKeyGenResponse> = await restc.create<HttpKeyGenResponse>('', keyGen);
-    console.log(`status: ${keyGenRes.statusCode}\npublic key:${keyGenRes.result?.pk}\nprivate key:${keyGenRes.result?.sk}`);
+    console.log(`status: ${keyGenRes.statusCode}\npublic key:${keyGenRes.result?.pk_hash}\nprivate key:${keyGenRes.result?.sk}`);
+    return [keyGenRes.result?.pk_hash || "", keyGenRes.result?.sk || ""]
+}
 
-    const msg = Buffer.from("test msg").toString('base64');
-    const signOp: HttpKeySign = { message:msg, sk: keyGenRes.result?.sk || ""}
+export async function iccSign(message: string, sk: string):Promise<string> {
+    const signOp: HttpKeySign = { message, sk}
     const restRes: rm.IRestResponse<HttpKeySign> = await restc.create<HttpKeySign>('', signOp);
     console.log(`status: ${restRes.statusCode}\nsignature:${restRes.result?.message}\n`);
+    return restRes.result?.message || "";
+}
 
+export async function iccVerify(message: string, messageSigned: string, pk_hash: string):Promise<string> {
     const verifyOp: HttpSignData = {
-        pub_key: keyGenRes.result?.pk || "",
-        from_account: msg,
-        to_account: msg, 
-        signature: restRes.result?.message || ""
+        pk_hash,
+        from_account: message,
+        to_account: message, 
+        signature: messageSigned
     };
+
     const restVrf: rm.IRestResponse<HttpBinData> = await restc.create<HttpBinData>('', verifyOp);
     console.log(`status: ${restVrf.statusCode}\nsignature:${restVrf.result?.code}\n`);
+    return restVrf.result?.code || "";
+}
+                                 
+async function icc_validator_test() {
+    console.log("generate key pair");
+    const [pkHash, sk] = await iccKeyPair()
+
+    console.log("signing");
+    const msg = Buffer.from("test msg").toString("base64");
+    const msgSigned = await iccSign(msg, sk)
+    
+    console.log("verify");
+    const isOk = await iccVerify(msg, msgSigned, pkHash)
+
+    console.log(`icc test done, status: ${isOk}`);
 }
 
 icc_validator_test().then(
