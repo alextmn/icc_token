@@ -26,19 +26,7 @@ var appendBuffer = function(buffer1:any, buffer2:any) {
 };
 
 async function main() {
-  let Dilithium2 = await getKernel('dilithium2_n3_v1');
-
-  console.log("Generating Sender ICC keys");
-  let senderKeypair = Dilithium2.genkey();
-  
-  console.log("Generating Reciver ICC public key and calculating SHA256");
-  let recvKeypair = Dilithium2.genkey();
-  const rHash = sha256(recvKeypair.pk);
-  console.log("Reciver hash:" + rHash.toString('base64'));
-
-  console.log("ICC tx payload length:" + icc_payload.length);
-
-  console.log("Let's ICC token transfer to a Solana account...");
+  console.log("E2E: ICC token transfer to a Solana account...");
 
   // Establish connection to the cluster
   await establishConnection();
