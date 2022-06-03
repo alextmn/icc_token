@@ -71,9 +71,9 @@ async function icc_validator_test() {
     console.log("verify");
     const validatorResponse = await iccVerify(msg, msgSigned, pkHash)
 
-    const ba = Buffer.from(validatorResponse);
+    const ba = Buffer.from(JSON.stringify(validatorResponse));
 
-    console.log(`icc test done ${ba.size()}`);
+    console.log(`icc test done ${ba.length}`);
 }
 
 icc_validator_test().then(

@@ -2,6 +2,7 @@
  * **************** ICC token DEMO WALLET *********************
  */
 
+import { iccKeyPair, iccSign, iccVerify } from './icc_validator_rest';
 import {
   establishConnection,
   establishPayer,
@@ -57,7 +58,18 @@ async function main() {
   // 4. sender -> SOL: submit tx
   // sender sign, validator signature, sender pk, recv public key
   
-  let icc_payload = [...rHash, ...rHash, ...rHash, ...rHash]
+  console.log("-------ICC generate key pair------");
+    const [pkHash, sk] = await iccKeyPair()
+  console.log("-------ICC Wallet signing------");
+  const msg = Buffer.from("test msg").toString("base64");
+  const msgSigned = await iccSign(msg, sk)
+  
+  console.log("-------Validator signing------");
+  const validatorResponse = await iccVerify(msg, msgSigned, pkHash)
+
+  const icc_payload = Buffer.from(JSON.stringify(validatorResponse));
+
+  console.log(`------- ICC Tx ready, size: ${icc_payload.length} -------`);
   
   // make Transfer
     await makeICCTransfer(icc_payload);
