@@ -76,10 +76,10 @@ async function icc_validator_test() {
     console.log(`icc test done. Bytes will be sent to blockchain: ${ba.length}`);
 }
 
-icc_validator_test().then(
-    () => process.exit(),
-    err => {
-        console.error(err);
-        process.exit(-1);
-    },
-);
+// icc_validator_test().then(
+//     () => process.exit(),
+//     err => {
+//         console.error(err);
+//         process.exit(-1);
+//     },
+// );
