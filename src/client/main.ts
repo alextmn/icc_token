@@ -60,7 +60,7 @@ async function main() {
   console.log(`------- ICC Tx ready, size: ${icc_payload.length} -------`);
   
   // make Transfer
-    await makeICCTransfer(icc_payload);
+  await makeICCTransfer(icc_payload);
 
   // Find out how many times we have done all the token transfers
   await reportTransfers();

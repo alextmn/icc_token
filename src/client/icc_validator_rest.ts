@@ -73,7 +73,7 @@ async function icc_validator_test() {
 
     const ba = Buffer.from(JSON.stringify(validatorResponse));
 
-    console.log(`icc test done ${ba.length}`);
+    console.log(`icc test done. Bytes will be sent to blockchain: ${ba.length}`);
 }
 
 icc_validator_test().then(

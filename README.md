@@ -1,9 +1,8 @@
 
 # ICC Token on Solana
 
-### Configure CLI
-
-> If you're on Windows, it is recommended to use [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10) to run these commands
+### Intsall Solana NET
+https://docs.solana.com/cli/install-solana-cli-tools
 
 1. Set CLI config url to localhost cluster
 
