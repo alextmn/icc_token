@@ -48,7 +48,7 @@ async function main() {
   // Check if the program has been deployed
   await checkProgram();
 
-  
+
   //let icc_payload = [...sign, ...recvKeypair.pk, ...rHash]
   // sender, reciver, signature, validator
   // 1. reciver->sender: hash of pk
@@ -56,6 +56,7 @@ async function main() {
   // 3. sender -> ICC validator: pk, hash of send pk, ICC sign (saving pk, sign)
   // 4. sender -> SOL: submit tx
   // sender sign, validator signature, sender pk, recv public key
+  
   let icc_payload = [...rHash, ...rHash, ...rHash, ...rHash]
   
   // make Transfer

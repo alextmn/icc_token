@@ -16,6 +16,7 @@ interface HttpSignData {
     from_account: string,
     to_account: string,
     signature: string,
+    validator_signature: string,
 }
 interface HttpKeyGenData {
     key_gen: string;
@@ -45,21 +46,22 @@ export async function iccSign(message: string, sk: string):Promise<string> {
     return restRes.result?.message || "";
 }
 
-export async function iccVerify(message: string, messageSigned: string, pk_hash: string):Promise<string> {
+export async function iccVerify(message: string, messageSigned: string, pk_hash: string):Promise<HttpSignData> {
     const verifyOp: HttpSignData = {
         pk_hash,
         from_account: message,
         to_account: message, 
-        signature: messageSigned
+        signature: messageSigned,
+        validator_signature: '',
     };
 
-    const restVrf: rm.IRestResponse<HttpBinData> = await restc.create<HttpBinData>('', verifyOp);
-    console.log(`status: ${restVrf.statusCode}\nsignature:${restVrf.result?.code}\n`);
-    return restVrf.result?.code || "";
+    const restVrf: rm.IRestResponse<HttpSignData> = await restc.create<HttpSignData>('', verifyOp);
+    console.log(`status: ${restVrf.statusCode}\nsignature:${JSON.stringify(restVrf.result)}\n`);
+    return restVrf.result || verifyOp;
 }
                                  
 async function icc_validator_test() {
-    console.log("generate key pair");
+    console.log("-------generate key pair------");
     const [pkHash, sk] = await iccKeyPair()
 
     console.log("signing");
@@ -67,9 +69,11 @@ async function icc_validator_test() {
     const msgSigned = await iccSign(msg, sk)
     
     console.log("verify");
-    const isOk = await iccVerify(msg, msgSigned, pkHash)
+    const validatorResponse = await iccVerify(msg, msgSigned, pkHash)
 
-    console.log(`icc test done, status: ${isOk}`);
+    const ba = Buffer.from(validatorResponse);
+
+    console.log(`icc test done ${ba.size()}`);
 }
 
 icc_validator_test().then(
