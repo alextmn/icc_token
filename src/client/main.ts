@@ -113,6 +113,14 @@ app.post('/solana-tx', async (req: Request, res: Response) => {
 });
 
 
-app.listen(3000, () => {
+app.listen(3000, async () =>  {
+  await establishConnection();
+
+  // Determine who pays for the fees
+  await establishPayer();
+
+  // Check if the program has been deployed
+  await checkProgram();
   console.log(`[server]: Server is running at http://localhost:3000`);
+
 });
