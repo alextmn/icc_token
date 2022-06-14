@@ -11,6 +11,8 @@ import {
   reportTransfers,
 } from './icc_wallet';
 const sha256  = require('sha256');
+import express, { Express, Request, Response } from 'express';
+import cors from 'cors';
 
 function toHexString(byteArray : any) {
   return Array.from(byteArray, function(byte: any) {
@@ -50,7 +52,7 @@ async function main() {
     const [pkHash, sk] = await iccKeyPair()
   console.log("-------ICC Wallet signing------");
   const msg = Buffer.from("test msg").toString("base64");
-  const msgSigned = await iccSign(msg, sk)
+  const [msgSigned] = await iccSign(msg, sk)
   
   console.log("-------Validator signing------");
   const validatorResponse = await iccVerify(msg, msgSigned, pkHash)
@@ -68,10 +70,49 @@ async function main() {
   console.log('Success');
 }
 
-main().then(
-  () => process.exit(),
-  err => {
-    console.error(err);
-    process.exit(-1);
-  },
-);
+// main().then(
+//   () => process.exit(),
+//   err => {
+//     console.error(err);
+//     process.exit(-1);
+//   },
+// );
+
+const app: Express = express();
+
+const allowedOrigins = ['*'];
+const options: cors.CorsOptions = {
+  origin: allowedOrigins
+};
+
+app.use(cors());
+app.use(express.json()); 
+
+app.post('/keypair', async (req: Request, res: Response) => {
+  const [pkHash, sk, pk] = await iccKeyPair()
+  res.send(JSON.stringify({pkHash, sk, pk}));
+});
+
+app.post('/wallet-sign', async (req: Request, res: Response) => {
+
+  const m64 = Buffer.from(req.body.msg).toString("base64");
+  const [ walletSignature, iccSignature ] = await iccSign(m64, req.body.sk)
+  res.send(JSON.stringify({walletSignature, iccSignature}));
+});
+
+app.post('/validator-sign', async (req: Request, res: Response) => {
+
+  const m64 = Buffer.from(req.body.msg).toString("base64");
+  const validatorResponse = await iccVerify(m64, req.body.msgSigned, req.body.pkHash)
+  res.send(JSON.stringify({validatorResponse}));
+});
+
+app.post('/solana-tx', async (req: Request, res: Response) => {
+  const response = await makeICCTransfer(req.body);  
+  res.send(response);
+});
+
+
+app.listen(3000, () => {
+  console.log(`[server]: Server is running at http://localhost:3000`);
+});

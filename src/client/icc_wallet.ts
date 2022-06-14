@@ -198,18 +198,19 @@ export async function checkProgram(): Promise<void> {
 /**
  * Perform  ICC  transfer
  */
-export async function makeICCTransfer(icc_payload: Buffer): Promise<void> {
+export async function makeICCTransfer(icc_payload: Buffer): Promise<string> {
   console.log('Making ICC transfer', greetedPubkey.toBase58());
   const instruction = new TransactionInstruction({
     keys: [{pubkey: greetedPubkey, isSigner: false, isWritable: true}],
     programId,
     data: icc_payload, // All instructions are hellos
   });
-  await sendAndConfirmTransaction(
+  const str = await sendAndConfirmTransaction(
     connection,
     new Transaction().add(instruction),
     [payer],
   );
+  return str;
 }
 
 /**
