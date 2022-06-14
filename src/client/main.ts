@@ -108,7 +108,10 @@ app.post('/validator-sign', async (req: Request, res: Response) => {
 });
 
 app.post('/solana-tx', async (req: Request, res: Response) => {
-  const response = await makeICCTransfer(req.body);  
+  const payload = JSON.stringify(req.body);
+  console.log(`solana smart contract tx: ${payload}`);
+  const response = await makeICCTransfer(Buffer.from(payload));  
+  console.log(response);
   res.send(response);
 });
 
