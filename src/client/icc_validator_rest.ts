@@ -12,8 +12,7 @@ interface HttpBinData {
     code: string;
 }                                             
 interface HttpSignData {
-    pk_hash: string;
-    from_account: string,
+    sender_hash: string;
     to_account: string,
     signature: string,
     validator_signature: string,
@@ -23,7 +22,7 @@ interface HttpKeyGenData {
 }
 
 interface HttpKeyGenResponse {
-    pk_hash: string;
+    sender_hash: string;
     sk: string;
     pk: string;
 }
@@ -41,8 +40,8 @@ interface HttpKeySignResponse {
 export async function iccKeyPair() :Promise<[string,string, string]> {
     const keyGen: HttpKeyGenData = { key_gen:"true" }
     const keyGenRes: rm.IRestResponse<HttpKeyGenResponse> = await restc.create<HttpKeyGenResponse>('', keyGen);
-    console.log(`status: ${keyGenRes.statusCode}\npublic key:${keyGenRes.result?.pk_hash}\nprivate key:${keyGenRes.result?.sk}`);
-    return [keyGenRes.result?.pk_hash || "", keyGenRes.result?.sk || "", keyGenRes.result?.pk || ""]
+    console.log(`status: ${keyGenRes.statusCode}\npublic key:${keyGenRes.result?.sender_hash}\nprivate key:${keyGenRes.result?.sk}`);
+    return [keyGenRes.result?.sender_hash || "", keyGenRes.result?.sk || "", keyGenRes.result?.pk || ""]
 }
 
 export async function iccSign(message: string, sk: string):Promise<[string,string]> {
@@ -52,10 +51,9 @@ export async function iccSign(message: string, sk: string):Promise<[string,strin
     return [restRes.result?.message || "", restRes.result?.sk || ""];
 }
 
-export async function iccVerify(message: string, messageSigned: string, pk_hash: string):Promise<HttpSignData> {
+export async function iccVerify(message: string, messageSigned: string, sender_hash: string):Promise<HttpSignData> {
     const verifyOp: HttpSignData = {
-        pk_hash,
-        from_account: message,
+        sender_hash,
         to_account: message, 
         signature: messageSigned,
         validator_signature: '',
