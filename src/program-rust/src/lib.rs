@@ -47,3 +47,14 @@ pub fn process_instruction(
 
     Ok(())
 }
+// qnt_add_from => has256(pub_qnt)
+// JS/Wallet
+// blocking logging
+//pub fn transfer(r, hash, amount, qnt_add_from, qunt_address_to, **prev_hash**) {
+// spike: how to lookup transaction on the ledger: qnt_add_from->prev_hash
+    // 1. prev_tx = lookup previous tx  using qnt_add_from// spike ??
+    // 2. prev_hash = prev_tx.hash
+   // 3. hash(r ^ amount ^ add_from ^ address_to) == hash_prev
+    // 4. save hash => storage
+    // 5  save qnt_add_from, qunt_address_to
+//}
